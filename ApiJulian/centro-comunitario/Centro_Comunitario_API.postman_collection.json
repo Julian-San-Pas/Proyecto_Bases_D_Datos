@@ -1,0 +1,731 @@
+{
+  "info": {
+    "name": "Centro Comunitario API",
+    "description": "Sistema de Gestión de Centro Comunitario de Bienestar y Actividades Formativas\n\n## Uso:\n1. Importa esta colección en Postman\n2. Configura la variable `base_url` a `http://localhost:8080`\n3. Crea un usuario y registra tu token JWT en la variable `token`\n4. ¡Listo para probar!",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_postman_id": "centro-comunitario-2024"
+  },
+  "variable": [
+    { "key": "base_url", "value": "http://localhost:8080" },
+    { "key": "token", "value": "" },
+    { "key": "usuario_id", "value": "" },
+    { "key": "actividad_id", "value": "" },
+    { "key": "sesion_id", "value": "" },
+    { "key": "inscripcion_id", "value": "" },
+    { "key": "programa_id", "value": "" },
+    { "key": "evaluacion_id", "value": "" },
+    { "key": "anuncio_id", "value": "" },
+    { "key": "foro_id", "value": "" }
+  ],
+  "item": [
+    {
+      "name": "🔐 Autenticación",
+      "item": [
+        {
+          "name": "Registrar Usuario",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "  const res = pm.response.json();",
+                  "  pm.collectionVariables.set('usuario_id', res.id);",
+                  "  pm.test('Usuario creado exitosamente', () => pm.response.to.have.status(201));",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{base_url}}/api/v1/usuarios", "host": ["{{base_url}}"], "path": ["api", "v1", "usuarios"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombreCompleto\": \"María García López\",\n  \"documentoIdentificacion\": \"1234567890\",\n  \"edad\": 28,\n  \"correoElectronico\": \"maria.garcia@email.com\",\n  \"numerTelefono\": \"3001234567\",\n  \"direccionResidencia\": \"Calle 50 #30-20, Medellín\",\n  \"rol\": \"PARTICIPANTE\",\n  \"contrasena\": \"password123\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Registrar Instructor",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{base_url}}/api/v1/usuarios", "host": ["{{base_url}}"], "path": ["api", "v1", "usuarios"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombreCompleto\": \"Carlos Rodríguez\",\n  \"documentoIdentificacion\": \"9876543210\",\n  \"edad\": 35,\n  \"correoElectronico\": \"carlos.instructor@email.com\",\n  \"numerTelefono\": \"3109876543\",\n  \"direccionResidencia\": \"Av. El Poblado #10-5, Medellín\",\n  \"rol\": \"INSTRUCTOR\",\n  \"contrasena\": \"password123\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Registrar Administrador",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{base_url}}/api/v1/usuarios", "host": ["{{base_url}}"], "path": ["api", "v1", "usuarios"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombreCompleto\": \"Ana Martínez Admin\",\n  \"documentoIdentificacion\": \"1122334455\",\n  \"edad\": 40,\n  \"correoElectronico\": \"admin@centrocomunitario.com\",\n  \"numerTelefono\": \"3201122334\",\n  \"direccionResidencia\": \"Centro, Medellín\",\n  \"rol\": \"ADMINISTRADOR\",\n  \"contrasena\": \"admin123\"\n}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "👥 Usuarios",
+      "item": [
+        {
+          "name": "Listar todos los usuarios",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{base_url}}/api/v1/usuarios", "host": ["{{base_url}}"], "path": ["api", "v1", "usuarios"] }
+          }
+        },
+        {
+          "name": "Buscar usuario por ID",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{base_url}}/api/v1/usuarios/{{usuario_id}}", "host": ["{{base_url}}"], "path": ["api", "v1", "usuarios", "{{usuario_id}}"] }
+          }
+        },
+        {
+          "name": "Buscar por rol - PARTICIPANTE",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{base_url}}/api/v1/usuarios/rol/PARTICIPANTE", "host": ["{{base_url}}"], "path": ["api", "v1", "usuarios", "rol", "PARTICIPANTE"] }
+          }
+        },
+        {
+          "name": "Buscar por rol - INSTRUCTOR",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{base_url}}/api/v1/usuarios/rol/INSTRUCTOR", "host": ["{{base_url}}"], "path": ["api", "v1", "usuarios", "rol", "INSTRUCTOR"] }
+          }
+        },
+        {
+          "name": "Buscar por rol - COORDINADOR",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{base_url}}/api/v1/usuarios/rol/COORDINADOR", "host": ["{{base_url}}"], "path": ["api", "v1", "usuarios", "rol", "COORDINADOR"] }
+          }
+        },
+        {
+          "name": "Listar usuarios activos",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{base_url}}/api/v1/usuarios/activos", "host": ["{{base_url}}"], "path": ["api", "v1", "usuarios", "activos"] }
+          }
+        },
+        {
+          "name": "Actualizar usuario",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{base_url}}/api/v1/usuarios/{{usuario_id}}", "host": ["{{base_url}}"], "path": ["api", "v1", "usuarios", "{{usuario_id}}"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombreCompleto\": \"María García López (Actualizado)\",\n  \"documentoIdentificacion\": \"1234567890\",\n  \"edad\": 29,\n  \"correoElectronico\": \"maria.garcia@email.com\",\n  \"numerTelefono\": \"3001234999\",\n  \"direccionResidencia\": \"Calle 60 #40-10, Medellín\",\n  \"rol\": \"PARTICIPANTE\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Desactivar usuario",
+          "request": {
+            "method": "DELETE",
+            "url": { "raw": "{{base_url}}/api/v1/usuarios/{{usuario_id}}", "host": ["{{base_url}}"], "path": ["api", "v1", "usuarios", "{{usuario_id}}"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "📚 Actividades",
+      "item": [
+        {
+          "name": "Crear actividad - Arte",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "  const res = pm.response.json();",
+                  "  pm.collectionVariables.set('actividad_id', res.id);",
+                  "  pm.test('Actividad creada', () => pm.response.to.have.status(201));",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{base_url}}/api/v1/actividades", "host": ["{{base_url}}"], "path": ["api", "v1", "actividades"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Taller de Pintura Acuarela\",\n  \"categoria\": \"ARTE\",\n  \"descripcion\": \"Aprende las técnicas básicas y avanzadas de la pintura con acuarela\",\n  \"objetivo\": \"Desarrollar habilidades artísticas y expresión creativa a través de la acuarela\",\n  \"fechaInicio\": \"2024-03-01\",\n  \"fechaFinalizacion\": \"2024-04-30\",\n  \"intensidadHoraria\": 40,\n  \"cupoMaximo\": 20,\n  \"recursosRequeridos\": [\"Pinceles\", \"Pinturas acuarela\", \"Papel especial\", \"Paletas\"],\n  \"instructorId\": \"{{instructor_id}}\",\n  \"requiereAprobacion\": false\n}"
+            }
+          }
+        },
+        {
+          "name": "Crear actividad - Deporte",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{base_url}}/api/v1/actividades", "host": ["{{base_url}}"], "path": ["api", "v1", "actividades"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Yoga para Adultos Mayores\",\n  \"categoria\": \"DEPORTE\",\n  \"descripcion\": \"Sesiones de yoga adaptadas para personas mayores de 60 años\",\n  \"objetivo\": \"Mejorar la flexibilidad, equilibrio y bienestar mental en adultos mayores\",\n  \"fechaInicio\": \"2024-03-05\",\n  \"fechaFinalizacion\": \"2024-05-30\",\n  \"intensidadHoraria\": 24,\n  \"cupoMaximo\": 15,\n  \"recursosRequeridos\": [\"Colchonetas\", \"Bloques de yoga\", \"Bandas elásticas\"],\n  \"requiereAprobacion\": false\n}"
+            }
+          }
+        },
+        {
+          "name": "Crear actividad - Tecnología",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{base_url}}/api/v1/actividades", "host": ["{{base_url}}"], "path": ["api", "v1", "actividades"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Introducción a la Programación con Python\",\n  \"categoria\": \"TECNOLOGIA\",\n  \"descripcion\": \"Curso básico de programación usando Python, ideal para principiantes\",\n  \"objetivo\": \"Adquirir conocimientos fundamentales de programación y pensamiento lógico\",\n  \"fechaInicio\": \"2024-03-10\",\n  \"fechaFinalizacion\": \"2024-06-10\",\n  \"intensidadHoraria\": 80,\n  \"cupoMaximo\": 25,\n  \"recursosRequeridos\": [\"Computadores\", \"Proyector\", \"Acceso a internet\"],\n  \"requiereAprobacion\": false\n}"
+            }
+          }
+        },
+        {
+          "name": "Crear actividad - Propuesta Líder (requiere aprobación)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{base_url}}/api/v1/actividades", "host": ["{{base_url}}"], "path": ["api", "v1", "actividades"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Feria de Emprendimiento Local\",\n  \"categoria\": \"EMPRENDIMIENTO\",\n  \"descripcion\": \"Espacio para que emprendedores del barrio exhiban sus productos y servicios\",\n  \"objetivo\": \"Fomentar el emprendimiento y la economía local\",\n  \"fechaInicio\": \"2024-04-15\",\n  \"fechaFinalizacion\": \"2024-04-15\",\n  \"intensidadHoraria\": 8,\n  \"cupoMaximo\": 50,\n  \"recursosRequeridos\": [\"Mesas\", \"Sillas\", \"Micrófonos\"],\n  \"requiereAprobacion\": true\n}"
+            }
+          }
+        },
+        {
+          "name": "Listar todas las actividades",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{base_url}}/api/v1/actividades", "host": ["{{base_url}}"], "path": ["api", "v1", "actividades"] }
+          }
+        },
+        {
+          "name": "Buscar actividad por ID",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{base_url}}/api/v1/actividades/{{actividad_id}}", "host": ["{{base_url}}"], "path": ["api", "v1", "actividades", "{{actividad_id}}"] }
+          }
+        },
+        {
+          "name": "Buscar por categoría - ARTE",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{base_url}}/api/v1/actividades/categoria/ARTE", "host": ["{{base_url}}"], "path": ["api", "v1", "actividades", "categoria", "ARTE"] }
+          }
+        },
+        {
+          "name": "Buscar por categoría - TECNOLOGIA",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{base_url}}/api/v1/actividades/categoria/TECNOLOGIA", "host": ["{{base_url}}"], "path": ["api", "v1", "actividades", "categoria", "TECNOLOGIA"] }
+          }
+        },
+        {
+          "name": "Buscar por estado - PROGRAMADA",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{base_url}}/api/v1/actividades/estado/PROGRAMADA", "host": ["{{base_url}}"], "path": ["api", "v1", "actividades", "estado", "PROGRAMADA"] }
+          }
+        },
+        {
+          "name": "Buscar por nombre",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/api/v1/actividades/buscar?nombre=yoga",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "actividades", "buscar"],
+              "query": [{ "key": "nombre", "value": "yoga" }]
+            }
+          }
+        },
+        {
+          "name": "Buscar por rango de fechas",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/api/v1/actividades/rango-fechas?inicio=2024-03-01&fin=2024-06-30",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "actividades", "rango-fechas"],
+              "query": [
+                { "key": "inicio", "value": "2024-03-01" },
+                { "key": "fin", "value": "2024-06-30" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Ver cupos disponibles",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{base_url}}/api/v1/actividades/{{actividad_id}}/cupos-disponibles", "host": ["{{base_url}}"], "path": ["api", "v1", "actividades", "{{actividad_id}}", "cupos-disponibles"] }
+          }
+        },
+        {
+          "name": "Listar pendientes de aprobación",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{base_url}}/api/v1/actividades/pendientes-aprobacion", "host": ["{{base_url}}"], "path": ["api", "v1", "actividades", "pendientes-aprobacion"] }
+          }
+        },
+        {
+          "name": "Aprobar actividad",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{base_url}}/api/v1/actividades/{{actividad_id}}/aprobar", "host": ["{{base_url}}"], "path": ["api", "v1", "actividades", "{{actividad_id}}", "aprobar"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"observaciones\": \"Actividad aprobada. Cumple con los requisitos del centro.\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Cambiar estado a EN_CURSO",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{base_url}}/api/v1/actividades/{{actividad_id}}/estado", "host": ["{{base_url}}"], "path": ["api", "v1", "actividades", "{{actividad_id}}", "estado"] },
+            "body": { "mode": "raw", "raw": "{\n  \"estado\": \"EN_CURSO\"\n}" }
+          }
+        },
+        {
+          "name": "Cambiar estado a FINALIZADA",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{base_url}}/api/v1/actividades/{{actividad_id}}/estado", "host": ["{{base_url}}"], "path": ["api", "v1", "actividades", "{{actividad_id}}", "estado"] },
+            "body": { "mode": "raw", "raw": "{\n  \"estado\": \"FINALIZADA\"\n}" }
+          }
+        },
+        {
+          "name": "Cambiar estado a CANCELADA",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{base_url}}/api/v1/actividades/{{actividad_id}}/estado", "host": ["{{base_url}}"], "path": ["api", "v1", "actividades", "{{actividad_id}}", "estado"] },
+            "body": { "mode": "raw", "raw": "{\n  \"estado\": \"CANCELADA\"\n}" }
+          }
+        },
+        {
+          "name": "Actualizar actividad",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{base_url}}/api/v1/actividades/{{actividad_id}}", "host": ["{{base_url}}"], "path": ["api", "v1", "actividades", "{{actividad_id}}"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Taller de Pintura Acuarela - Nivel Avanzado\",\n  \"categoria\": \"ARTE\",\n  \"descripcion\": \"Curso avanzado de acuarela con técnicas profesionales\",\n  \"objetivo\": \"Dominar técnicas avanzadas de acuarela\",\n  \"fechaInicio\": \"2024-03-01\",\n  \"fechaFinalizacion\": \"2024-05-31\",\n  \"intensidadHoraria\": 60,\n  \"cupoMaximo\": 15,\n  \"recursosRequeridos\": [\"Pinceles profesionales\", \"Pinturas acuarela premium\"]\n}"
+            }
+          }
+        },
+        {
+          "name": "Eliminar actividad",
+          "request": {
+            "method": "DELETE",
+            "url": { "raw": "{{base_url}}/api/v1/actividades/{{actividad_id}}", "host": ["{{base_url}}"], "path": ["api", "v1", "actividades", "{{actividad_id}}"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "📋 Inscripciones",
+      "item": [
+        {
+          "name": "Inscribir participante en actividad",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "  const res = pm.response.json();",
+                  "  pm.collectionVariables.set('inscripcion_id', res.id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{base_url}}/api/v1/inscripciones", "host": ["{{base_url}}"], "path": ["api", "v1", "inscripciones"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"participanteId\": \"{{usuario_id}}\",\n  \"actividadId\": \"{{actividad_id}}\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Ver inscripción por ID",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{base_url}}/api/v1/inscripciones/{{inscripcion_id}}", "host": ["{{base_url}}"], "path": ["api", "v1", "inscripciones", "{{inscripcion_id}}"] }
+          }
+        },
+        {
+          "name": "Inscripciones de un participante",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{base_url}}/api/v1/inscripciones/participante/{{usuario_id}}", "host": ["{{base_url}}"], "path": ["api", "v1", "inscripciones", "participante", "{{usuario_id}}"] }
+          }
+        },
+        {
+          "name": "Participantes de una actividad",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{base_url}}/api/v1/inscripciones/actividad/{{actividad_id}}", "host": ["{{base_url}}"], "path": ["api", "v1", "inscripciones", "actividad", "{{actividad_id}}"] }
+          }
+        },
+        {
+          "name": "Cancelar inscripción",
+          "request": {
+            "method": "PATCH",
+            "url": { "raw": "{{base_url}}/api/v1/inscripciones/{{inscripcion_id}}/cancelar", "host": ["{{base_url}}"], "path": ["api", "v1", "inscripciones", "{{inscripcion_id}}", "cancelar"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "📅 Sesiones",
+      "item": [
+        {
+          "name": "Crear sesión presencial",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "  const res = pm.response.json();",
+                  "  pm.collectionVariables.set('sesion_id', res.id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{base_url}}/api/v1/sesiones", "host": ["{{base_url}}"], "path": ["api", "v1", "sesiones"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"actividadId\": \"{{actividad_id}}\",\n  \"fecha\": \"2024-03-01\",\n  \"horaInicio\": \"09:00\",\n  \"horaFinalizacion\": \"11:00\",\n  \"modalidad\": \"PRESENCIAL\",\n  \"espacioAsignado\": \"Salón 201 - Edificio Principal\",\n  \"observaciones\": \"Primera sesión introductoria\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Crear sesión virtual",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{base_url}}/api/v1/sesiones", "host": ["{{base_url}}"], "path": ["api", "v1", "sesiones"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"actividadId\": \"{{actividad_id}}\",\n  \"fecha\": \"2024-03-08\",\n  \"horaInicio\": \"09:00\",\n  \"horaFinalizacion\": \"11:00\",\n  \"modalidad\": \"VIRTUAL\",\n  \"enlaceAcceso\": \"https://meet.google.com/abc-defg-hij\",\n  \"observaciones\": \"Sesión de repaso virtual\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Listar todas las sesiones",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{base_url}}/api/v1/sesiones", "host": ["{{base_url}}"], "path": ["api", "v1", "sesiones"] }
+          }
+        },
+        {
+          "name": "Sesiones de una actividad",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{base_url}}/api/v1/sesiones/actividad/{{actividad_id}}", "host": ["{{base_url}}"], "path": ["api", "v1", "sesiones", "actividad", "{{actividad_id}}"] }
+          }
+        },
+        {
+          "name": "Registrar asistencia",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{base_url}}/api/v1/sesiones/{{sesion_id}}/asistencia", "host": ["{{base_url}}"], "path": ["api", "v1", "sesiones", "{{sesion_id}}", "asistencia"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"participantesAsistentes\": [\"{{usuario_id}}\"]\n}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "⭐ Evaluaciones",
+      "item": [
+        {
+          "name": "Crear evaluación de participante sobre actividad",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "  const res = pm.response.json();",
+                  "  pm.collectionVariables.set('evaluacion_id', res.id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{base_url}}/api/v1/evaluaciones", "host": ["{{base_url}}"], "path": ["api", "v1", "evaluaciones"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"autorId\": \"{{usuario_id}}\",\n  \"actividadId\": \"{{actividad_id}}\",\n  \"tipo\": \"PARTICIPANTE_SOBRE_ACTIVIDAD\",\n  \"valoracion\": 5,\n  \"observaciones\": \"Excelente actividad, muy bien organizada y con contenido de calidad\",\n  \"sugerenciasMejora\": \"Sería genial tener más sesiones prácticas\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Evaluación de instructor sobre participante",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{base_url}}/api/v1/evaluaciones", "host": ["{{base_url}}"], "path": ["api", "v1", "evaluaciones"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"autorId\": \"{{instructor_id}}\",\n  \"actividadId\": \"{{actividad_id}}\",\n  \"participanteEvaluadoId\": \"{{usuario_id}}\",\n  \"tipo\": \"INSTRUCTOR_SOBRE_PARTICIPANTE\",\n  \"valoracion\": 4,\n  \"observaciones\": \"Participante con buena disposición y aprendizaje constante\",\n  \"comentarioDesempeno\": \"Demuestra habilidades naturales para el arte\",\n  \"nivelCompromiso\": \"ALTO\",\n  \"progresoObservado\": \"Ha mejorado notablemente en técnica y color\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Evaluaciones de una actividad",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{base_url}}/api/v1/evaluaciones/actividad/{{actividad_id}}", "host": ["{{base_url}}"], "path": ["api", "v1", "evaluaciones", "actividad", "{{actividad_id}}"] }
+          }
+        },
+        {
+          "name": "Evaluaciones de un participante",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{base_url}}/api/v1/evaluaciones/participante/{{usuario_id}}", "host": ["{{base_url}}"], "path": ["api", "v1", "evaluaciones", "participante", "{{usuario_id}}"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "🎯 Programas Especiales",
+      "item": [
+        {
+          "name": "Crear programa especial",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "  const res = pm.response.json();",
+                  "  pm.collectionVariables.set('programa_id', res.id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{base_url}}/api/v1/programas", "host": ["{{base_url}}"], "path": ["api", "v1", "programas"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Semana del Bienestar 2024\",\n  \"descripcion\": \"Jornada de actividades enfocadas en salud física y mental para toda la comunidad\",\n  \"fechaInicio\": \"2024-04-01\",\n  \"fechaFinalizacion\": \"2024-04-07\",\n  \"poblacionObjetivo\": \"Todos los miembros de la comunidad, especialmente adultos mayores y jóvenes\",\n  \"responsablesIds\": [],\n  \"actividadesIds\": []\n}"
+            }
+          }
+        },
+        {
+          "name": "Listar todos los programas",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{base_url}}/api/v1/programas", "host": ["{{base_url}}"], "path": ["api", "v1", "programas"] }
+          }
+        },
+        {
+          "name": "Ver programa por ID",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{base_url}}/api/v1/programas/{{programa_id}}", "host": ["{{base_url}}"], "path": ["api", "v1", "programas", "{{programa_id}}"] }
+          }
+        },
+        {
+          "name": "Inscribirse en programa",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{base_url}}/api/v1/programas/{{programa_id}}/inscribir", "host": ["{{base_url}}"], "path": ["api", "v1", "programas", "{{programa_id}}", "inscribir"] },
+            "body": { "mode": "raw", "raw": "{\n  \"participanteId\": \"{{usuario_id}}\"\n}" }
+          }
+        },
+        {
+          "name": "Agregar actividad a programa",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{base_url}}/api/v1/programas/{{programa_id}}/actividades", "host": ["{{base_url}}"], "path": ["api", "v1", "programas", "{{programa_id}}", "actividades"] },
+            "body": { "mode": "raw", "raw": "{\n  \"actividadId\": \"{{actividad_id}}\"\n}" }
+          }
+        }
+      ]
+    },
+    {
+      "name": "📢 Anuncios",
+      "item": [
+        {
+          "name": "Crear anuncio",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "  const res = pm.response.json();",
+                  "  pm.collectionVariables.set('anuncio_id', res.id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{base_url}}/api/v1/anuncios", "host": ["{{base_url}}"], "path": ["api", "v1", "anuncios"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"titulo\": \"¡Nuevas actividades disponibles para el mes de abril!\",\n  \"contenido\": \"Nos complace anunciar la apertura de inscripciones para los talleres de pintura, yoga y programación. Los cupos son limitados. ¡No pierdas tu lugar!\",\n  \"autorId\": \"{{usuario_id}}\",\n  \"publicado\": true\n}"
+            }
+          }
+        },
+        {
+          "name": "Listar anuncios publicados",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{base_url}}/api/v1/anuncios", "host": ["{{base_url}}"], "path": ["api", "v1", "anuncios"] }
+          }
+        },
+        {
+          "name": "Ver anuncio por ID",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{base_url}}/api/v1/anuncios/{{anuncio_id}}", "host": ["{{base_url}}"], "path": ["api", "v1", "anuncios", "{{anuncio_id}}"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "💬 Foros",
+      "item": [
+        {
+          "name": "Crear foro / tema de discusión",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "  const res = pm.response.json();",
+                  "  pm.collectionVariables.set('foro_id', res.id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{base_url}}/api/v1/foros", "host": ["{{base_url}}"], "path": ["api", "v1", "foros"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"titulo\": \"¿Qué materiales necesito para el taller de acuarela?\",\n  \"descripcionInicial\": \"Hola a todos, soy nueva en el taller y quería preguntar si los materiales los provee el centro o debo traerlos yo. ¡Muchas gracias!\",\n  \"creadorId\": \"{{usuario_id}}\",\n  \"actividadId\": \"{{actividad_id}}\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Listar todos los foros",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{base_url}}/api/v1/foros", "host": ["{{base_url}}"], "path": ["api", "v1", "foros"] }
+          }
+        },
+        {
+          "name": "Ver foro por ID",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{base_url}}/api/v1/foros/{{foro_id}}", "host": ["{{base_url}}"], "path": ["api", "v1", "foros", "{{foro_id}}"] }
+          }
+        },
+        {
+          "name": "Agregar comentario al foro",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{base_url}}/api/v1/foros/{{foro_id}}/comentarios", "host": ["{{base_url}}"], "path": ["api", "v1", "foros", "{{foro_id}}", "comentarios"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"autorId\": \"{{usuario_id}}\",\n  \"contenido\": \"¡Hola! Los materiales básicos son provistos por el centro. Solo debes traer ganas de aprender. Te esperamos en la primera sesión.\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Foros de una actividad",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{base_url}}/api/v1/foros/actividad/{{actividad_id}}", "host": ["{{base_url}}"], "path": ["api", "v1", "foros", "actividad", "{{actividad_id}}"] }
+          }
+        },
+        {
+          "name": "Cerrar foro",
+          "request": {
+            "method": "PATCH",
+            "url": { "raw": "{{base_url}}/api/v1/foros/{{foro_id}}/cerrar", "host": ["{{base_url}}"], "path": ["api", "v1", "foros", "{{foro_id}}", "cerrar"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "📊 Estadísticas (Admin)",
+      "item": [
+        {
+          "name": "Estadísticas generales del centro",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{base_url}}/api/v1/estadisticas", "host": ["{{base_url}}"], "path": ["api", "v1", "estadisticas"] }
+          }
+        },
+        {
+          "name": "Estadísticas por categoría",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{base_url}}/api/v1/estadisticas/categorias", "host": ["{{base_url}}"], "path": ["api", "v1", "estadisticas", "categorias"] }
+          }
+        },
+        {
+          "name": "Reporte de asistencia por actividad",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{base_url}}/api/v1/estadisticas/asistencia/{{actividad_id}}", "host": ["{{base_url}}"], "path": ["api", "v1", "estadisticas", "asistencia", "{{actividad_id}}"] }
+          }
+        }
+      ]
+    }
+  ]
+}
